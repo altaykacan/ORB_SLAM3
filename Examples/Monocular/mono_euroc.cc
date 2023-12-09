@@ -31,7 +31,8 @@ void LoadImages(const string &strImagePath, const string &strPathTimes,
                 vector<string> &vstrImages, vector<double> &vTimeStamps);
 
 int main(int argc, char **argv)
-{  
+{
+    std::cout << "============ ALTAY WAS HERE ============"<< std::endl;
     if(argc < 5)
     {
         cerr << endl << "Usage: ./mono_euroc path_to_vocabulary path_to_settings path_to_sequence_folder_1 path_to_times_file_1 (path_to_image_folder_2 path_to_times_file_2 ... path_to_image_folder_N path_to_times_file_N) (trajectory_file_name)" << endl;
@@ -80,7 +81,8 @@ int main(int argc, char **argv)
     int fps = 20;
     float dT = 1.f/fps;
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
-    ORB_SLAM3::System SLAM(argv[1],argv[2],ORB_SLAM3::System::MONOCULAR, false);
+    // ORB_SLAM3::System SLAM(argv[1],argv[2],ORB_SLAM3::System::MONOCULAR, false);
+    ORB_SLAM3::System SLAM(argv[1],argv[2],ORB_SLAM3::System::MONOCULAR, true); // last flag is for visualising windows
     float imageScale = SLAM.GetImageScale();
 
     double t_resize = 0.f;
@@ -173,8 +175,10 @@ int main(int argc, char **argv)
         if(seq < num_seq - 1)
         {
             string kf_file_submap =  "./SubMaps/kf_SubMap_" + std::to_string(seq) + ".txt";
+            string kf_file_submap_deepscenario =  "./SubMaps/kf_SubMap_deepscenario_" + std::to_string(seq) + ".txt";
             string f_file_submap =  "./SubMaps/f_SubMap_" + std::to_string(seq) + ".txt";
             SLAM.SaveTrajectoryEuRoC(f_file_submap);
+            SLAM.SaveKeyFrameTrajectoryDeepScenario(kf_file_submap_deepscenario);
             SLAM.SaveKeyFrameTrajectoryEuRoC(kf_file_submap);
 
             cout << "Changing the dataset" << endl;
@@ -191,12 +195,18 @@ int main(int argc, char **argv)
     {
         const string kf_file =  "kf_" + string(argv[argc-1]) + ".txt";
         const string f_file =  "f_" + string(argv[argc-1]) + ".txt";
+        const string kf_file_deepscenario =  "kf_deepscenario_" + std::to_string(seq) + ".txt";
+        const string f_file_deepscenario =  "f_deepscenario_" + std::to_string(seq) + ".txt";
         SLAM.SaveTrajectoryEuRoC(f_file);
+        SLAM.SaveKeyFrameTrajectoryDeepScenario(kf_file_deepscenario);
+        SLAM.SaveTrajectoryDeepScenario(f_file_deepscenario);
         SLAM.SaveKeyFrameTrajectoryEuRoC(kf_file);
     }
     else
     {
         SLAM.SaveTrajectoryEuRoC("CameraTrajectory.txt");
+        SLAM.SaveKeyFrameTrajectoryDeepScenario("KeyFrameTrajectoryDeepScenario.txt");
+        SLAM.SaveTrajectoryDeepScenario("CameraTrajectoryDeepScenario.txt");
         SLAM.SaveKeyFrameTrajectoryEuRoC("KeyFrameTrajectory.txt");
     }
 

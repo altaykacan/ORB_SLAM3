@@ -158,6 +158,11 @@ public:
     void SaveTrajectoryEuRoC(const string &filename, Map* pMap);
     void SaveKeyFrameTrajectoryEuRoC(const string &filename, Map* pMap);
 
+    // Save the poses in KITTI format (as rotation matrix instead of
+    // quaternions) for the Deep Scenario dataset -altay
+    void SaveTrajectoryDeepScenario(const string &filename);
+    void SaveKeyFrameTrajectoryDeepScenario(const string &filename);
+
     // Save data used for initialization debug
     void SaveDebugData(const int &iniIdx);
 
