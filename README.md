@@ -1,3 +1,6 @@
+🎓 Master's Thesis Project Repo - ORB-SLAM3
+Custom fork my Master's thesis project. Main focus is to modify the original repository to work with custom data and save trajectories in the desired format.
+
 # ORB-SLAM3
 
 ### V1.0, December 22th, 2021
