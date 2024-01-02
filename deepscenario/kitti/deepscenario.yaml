@@ -7,7 +7,7 @@ File.version: "1.0"
 
 Camera.type: "PinHole"
 
-# Camera calibration and distortion parameters (OpenCV) 
+# Camera calibration and distortion parameters (OpenCV)
 Camera1.fx: 2779.9523856929486
 Camera1.fy: 2779.9523856929486
 Camera1.cx: 2655.5
@@ -24,11 +24,16 @@ Camera.height: 2988
 Camera.newWidth: 640
 Camera.newHeight: 480
 
-# Camera frames per second 
-Camera.fps: 20
+# Camera frames per second
+Camera.fps: 24
 
 # Color order of the images (0: BGR, 1: RGB. It is ignored if images are grayscale)
 Camera.RGB: 1
+
+#--------------------------------------------------------------------------------------------
+# Map parameters
+#--------------------------------------------------------------------------------------------
+System.SaveAtlasToFile: "./saved_map"
 
 #--------------------------------------------------------------------------------------------
 # ORB Parameters
@@ -37,7 +42,7 @@ Camera.RGB: 1
 # ORB Extractor: Number of features per image
 ORBextractor.nFeatures: 2000
 
-# ORB Extractor: Scale factor between levels in the scale pyramid 
+# ORB Extractor: Scale factor between levels in the scale pyramid
 ORBextractor.scaleFactor: 1.2
 
 # ORB Extractor: Number of levels in the scale pyramid
