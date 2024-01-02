@@ -584,6 +584,8 @@ void System::SavePointCloud(const string &filename){
 
     // Vectors containing pointers to MapPoint objects contained in the maps
     // Vector of pointers for Map Points -- vpMPs
+    // Vector of pointers for Reference Map Points -- vpRefMPs
+    // TODO figure out the difference between Reference Map Points and normal Map Points
     const vector<MapPoint*> &vpMPs = pActiveMap->GetAllMapPoints();
     const vector<MapPoint*> &vpRefMPs = pActiveMap->GetReferenceMapPoints();
 
@@ -600,6 +602,9 @@ void System::SavePointCloud(const string &filename){
     f << "pos_x, pos_y, pos_z";
     f.open(filename.c_str());
     f << fixed;
+
+    // TODO figure out if we need to consider whether the presence of IMU
+    // requires some transforms/exceptions
 
     // Iterate over map points, skip "bad" ones and reference map points
     for (size_t i=0, iend=vpMPs.size(); i<iend;i++)
