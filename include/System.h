@@ -140,6 +140,11 @@ public:
     void Shutdown();
     bool isShutDown();
 
+    // Custom function to save the pointcloud as a txt file, lists all
+    // map points.
+    // First call Shutdown()
+    void SavePointCloud(const string &filename);
+
     // Save camera trajectory in the TUM RGB-D dataset format.
     // Only for stereo and RGB-D. This method does not work for monocular.
     // Call first Shutdown()

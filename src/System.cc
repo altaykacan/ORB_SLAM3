@@ -567,6 +567,72 @@ bool System::isShutDown() {
     return mbShutDown;
 }
 
+void System::SavePointCloud(const string &filename){
+    // Code is based on MapDrawer::DrawMapPoints()
+    cout << endl << "Saving map point coordinates to " << filename << " ..." << endl;
+    cout << endl << "Number of maps is: " << mpAtlas->CountMaps() << endl;
+
+
+    // TODO Get all maps?
+    // vector<Map*> vpAllMaps = mpAtlas->GetAllMaps()
+
+    Map* pActiveMap = mpAtlas->GetCurrentMap();
+    if(!pActiveMap) {
+        cout << endl << "There is no active map (pActiveMap is null)" << endl;
+        return;
+    }
+
+    // Vectors containing pointers to MapPoint objects contained in the maps
+    // Vector of pointers for Map Points -- vpMPs
+    const vector<MapPoint*> &vpMPs = pActiveMap->GetAllMapPoints();
+    const vector<MapPoint*> &vpRefMPs = pActiveMap->GetReferenceMapPoints();
+
+    if(vpMPs.empty()){
+        cout << endl << "Vector of map points vpMPs is empty!" << endl;
+        return;
+    }
+
+    // Use a set for fast lookup of reference frames
+    set<MapPoint*> spRefMPs(vpRefMPs.begin(), vpRefMPs.end());
+
+    // Get the output file stream in fixed-point format for map points
+    ofstream f;
+    f << "pos_x, pos_y, pos_z";
+    f.open(filename.c_str());
+    f << fixed;
+
+    // Iterate over map points, skip "bad" ones and reference map points
+    for (size_t i=0, iend=vpMPs.size(); i<iend;i++)
+    {
+        if (vpMPs[i]->isBad() || spRefMPs.count(vpMPs[i])){
+            continue;
+        }
+        Eigen::Matrix<float,3,1> pos = vpMPs[i]->GetWorldPos();
+        f << pos(0) << ", " << pos(1) << ", " << pos(2) << endl;
+    }
+
+    // Close the output stream
+    f.close();
+
+    // Get the output file stream in fixed-point format for reference map points
+    f.open(("ref_" + filename).c_str());
+    f << "pos_x, pos_y, pos_z" << endl;
+    f << fixed;
+
+    // Iterate over reference map points, skip if bad
+    for (set<MapPoint*>::iterator sit=spRefMPs.begin(), send=spRefMPs.end(); sit!=send; sit++)
+    {
+        if((*sit)->isBad()){
+            continue;
+        }
+        Eigen::Matrix<float,3,1> pos = (*sit)->GetWorldPos();
+        f << pos(0) << ", " << pos(1) << ", " << pos(2) << endl;
+    }
+
+    // Close the output stream
+    f.close();
+}
+
 void System::SaveTrajectoryTUM(const string &filename)
 {
     cout << endl << "Saving camera trajectory to " << filename << " ..." << endl;

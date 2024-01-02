@@ -153,6 +153,8 @@ vector<KeyFrame*> Map::GetAllKeyFrames()
 vector<MapPoint*> Map::GetAllMapPoints()
 {
     unique_lock<mutex> lock(mMutexMap);
+    // Initalizes the vector with iterators pointing to the start and one after the end
+    // Vector contains all map points
     return vector<MapPoint*>(mspMapPoints.begin(),mspMapPoints.end());
 }
 

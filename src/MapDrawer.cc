@@ -150,8 +150,11 @@ void MapDrawer::DrawMapPoints()
     glBegin(GL_POINTS);
     glColor3f(0.0,0.0,0.0);
 
+    // Iterate over the map points
     for(size_t i=0, iend=vpMPs.size(); i<iend;i++)
     {
+        // if the map point "isBad" or if the map point is in the set
+        // of reference map points we skip
         if(vpMPs[i]->isBad() || spRefMPs.count(vpMPs[i]))
             continue;
         Eigen::Matrix<float,3,1> pos = vpMPs[i]->GetWorldPos();

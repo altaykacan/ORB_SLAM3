@@ -107,6 +107,7 @@ public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     MapPoint();
 
+    // These are constructors for MapPoint objects with different signatures
     MapPoint(const Eigen::Vector3f &Pos, KeyFrame* pRefKF, Map* pMap);
     MapPoint(const double invDepth, cv::Point2f uv_init, KeyFrame* pRefKF, KeyFrame* pHostKF, Map* pMap);
     MapPoint(const Eigen::Vector3f &Pos,  Map* pMap, Frame* pFrame, const int &idxF);
@@ -131,7 +132,7 @@ public:
     void SetBadFlag();
     bool isBad();
 
-    void Replace(MapPoint* pMP);    
+    void Replace(MapPoint* pMP);
     MapPoint* GetReplaced();
 
     void IncreaseVisible(int n=1);
@@ -187,7 +188,7 @@ public:
     // Variables used by loop closing
     long unsigned int mnLoopPointForKF;
     long unsigned int mnCorrectedByKF;
-    long unsigned int mnCorrectedReference;    
+    long unsigned int mnCorrectedReference;
     Eigen::Vector3f mPosGBA;
     long unsigned int mnBAGlobalForKF;
     long unsigned int mnBALocalForMerge;
@@ -207,7 +208,7 @@ public:
 
     unsigned int mnOriginMapId;
 
-protected:    
+protected:
 
      // Position in absolute coordinates
      Eigen::Vector3f mWorldPos;
