@@ -572,7 +572,6 @@ void System::SavePointCloud(const string &filename){
     cout << endl << "Saving map point coordinates to " << filename << " ..." << endl;
     cout << endl << "Number of maps is: " << mpAtlas->CountMaps() << endl;
 
-
     // TODO Get all maps?
     // vector<Map*> vpAllMaps = mpAtlas->GetAllMaps()
 
