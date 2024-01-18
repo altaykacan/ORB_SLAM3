@@ -150,6 +150,7 @@ int main(int argc, char **argv)
     // Save camera trajectory
     SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory.txt");
     SLAM.SaveKeyFrameTrajectoryDeepScenario("CustomKeyFrameTrajectory.txt");
+    SLAM.SaveTrajectoryDeepScenario("CustomAllFrameTrajectory.txt");
 
     // Save point cloud as txt file
     SLAM.SavePointCloud("test_full.txt");

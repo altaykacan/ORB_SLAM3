@@ -1249,7 +1249,7 @@ void System::SaveTrajectoryDeepScenario(const string &filename)
 
     // Transform all keyframes so that the first keyframe is at the origin.
     // After a loop closure the first keyframe might not be at the origin.
-    Sophus::SE3f Twb; // Can be word to cam0 or world to b depending on IMU or not.
+    Sophus::SE3f Twb; // Can be world to cam0 or world to b depending on IMU or not.
     if (mSensor==IMU_MONOCULAR || mSensor==IMU_STEREO || mSensor==IMU_RGBD)
         Twb = vpKFs[0]->GetImuPose();
     else
@@ -1330,7 +1330,9 @@ void System::SaveTrajectoryDeepScenario(const string &filename)
             Sophus::SE3f Twc = ((*lit)*Trw).inverse();
             Eigen::Matrix3f Rwc = Twc.rotationMatrix();
             Eigen::Vector3f twc = Twc.translation();
-            f << setprecision(9) << Rwc(0,0) << " " << Rwc(0,1)  << " " << Rwc(0,2) << " "  << twc(0) << " " <<
+            std::string path = pKF->mNameFile;
+            std::string filename = path.substr(path.find_last_of("/\\") + 1);
+            f << setprecision(9)  << filename << " " << Rwc(0,0) << " " << Rwc(0,1)  << " " << Rwc(0,2) << " "  << twc(0) << " " <<
                 Rwc(1,0) << " " << Rwc(1,1)  << " " << Rwc(1,2) << " "  << twc(1) << " " <<
                 Rwc(2,0) << " " << Rwc(2,1)  << " " << Rwc(2,2) << " "  << twc(2) << endl;
         }
@@ -1394,7 +1396,9 @@ void System::SaveKeyFrameTrajectoryDeepScenario(const string &filename)
             //Eigen::Quaternionf q = Twc.unit_quaternion();
             Eigen::Matrix3f Rwc = Twc.rotationMatrix();
             Eigen::Vector3f twc = Twc.translation();
-            f << setprecision(9)  << pKF->mNameFile << " " << Rwc(0,0) << " " << Rwc(0,1)  << " " << Rwc(0,2) << " "  << twc(0) << " " <<
+            std::string path = pKF->mNameFile;
+            std::string filename = path.substr(path.find_last_of("/\\") + 1);
+            f << setprecision(9)  << filename << " " << Rwc(0,0) << " " << Rwc(0,1)  << " " << Rwc(0,2) << " "  << twc(0) << " " <<
                 Rwc(1,0) << " " << Rwc(1,1)  << " " << Rwc(1,2) << " "  << twc(1) << " " <<
                 Rwc(2,0) << " " << Rwc(2,1)  << " " << Rwc(2,2) << " "  << twc(2) << endl;
         }
