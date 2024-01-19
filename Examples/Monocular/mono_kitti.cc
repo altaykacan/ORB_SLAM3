@@ -148,12 +148,12 @@ int main(int argc, char **argv)
     cout << "mean tracking time: " << totaltime/nImages << endl;
 
     // Save camera trajectory
-    SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory.txt");
-    SLAM.SaveKeyFrameTrajectoryDeepScenario("CustomKeyFrameTrajectory.txt");
-    SLAM.SaveTrajectoryDeepScenario("CustomAllFrameTrajectory.txt");
+    SLAM.SaveKeyFrameTrajectoryTUM("out_KeyFrameTrajectory.txt");
+    SLAM.SaveKeyFrameTrajectoryDeepScenario("out_CustomKeyFrameTrajectory.txt");
+    SLAM.SaveTrajectoryDeepScenario("out_CustomAllFrameTrajectory.txt");
 
-    // Save point cloud as txt file
-    SLAM.SavePointCloud("test_full.txt");
+    // Save point cloud as txt file, don't add file extension
+    SLAM.SavePointCloud("out_map");
 
     return 0;
 }

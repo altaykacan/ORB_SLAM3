@@ -599,7 +599,7 @@ void System::SavePointCloud(const string &filename){
     // Get the output file stream in fixed-point format for map points
     ofstream f;
     f << "pos_x, pos_y, pos_z";
-    f.open(filename.c_str());
+    f.open((filename + ".txt").c_str());
     f << fixed;
 
     // TODO figure out if we need to consider whether the presence of IMU
@@ -619,7 +619,7 @@ void System::SavePointCloud(const string &filename){
     f.close();
 
     // Get the output file stream in fixed-point format for reference map points
-    f.open(("ref_" + filename).c_str());
+    f.open((filename + "_ref_points" + ".txt").c_str());
     f << "pos_x, pos_y, pos_z" << endl;
     f << fixed;
 
