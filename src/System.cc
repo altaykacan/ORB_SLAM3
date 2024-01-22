@@ -1330,9 +1330,17 @@ void System::SaveTrajectoryDeepScenario(const string &filename)
             Sophus::SE3f Twc = ((*lit)*Trw).inverse();
             Eigen::Matrix3f Rwc = Twc.rotationMatrix();
             Eigen::Vector3f twc = Twc.translation();
-            std::string path = pKF->mNameFile;
-            std::string filename = path.substr(path.find_last_of("/\\") + 1);
-            f << setprecision(9)  << filename << " " << Rwc(0,0) << " " << Rwc(0,1)  << " " << Rwc(0,2) << " "  << twc(0) << " " <<
+            // std::string path = pKF->mNameFile;
+            // std::string filename = path.substr(path.find_last_of("/\\") + 1);
+            int intTime = static_cast<int>(*lT);
+            std::string strTime = std::to_string(intTime);
+
+            while (strTime.length() < 6){
+                strTime = "0" + strTime;
+            }
+
+            strTime += ".png";
+            f << setprecision(9) << strTime << " " << Rwc(0,0) << " " << Rwc(0,1)  << " " << Rwc(0,2) << " "  << twc(0) << " " <<
                 Rwc(1,0) << " " << Rwc(1,1)  << " " << Rwc(1,2) << " "  << twc(1) << " " <<
                 Rwc(2,0) << " " << Rwc(2,1)  << " " << Rwc(2,2) << " "  << twc(2) << endl;
         }
