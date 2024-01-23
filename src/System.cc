@@ -1271,52 +1271,32 @@ void System::SaveTrajectoryDeepScenario(const string &filename)
     list<bool>::iterator lbL = mpTracker->mlbLost.begin();
     // we get iterators for each of the things listed above
 
-    //cout << "size mlpReferences: " << mpTracker->mlpReferences.size() << endl;
-    //cout << "size mlRelativeFramePoses: " << mpTracker->mlRelativeFramePoses.size() << endl;
-    //cout << "size mpTracker->mlFrameTimes: " << mpTracker->mlFrameTimes.size() << endl;
-    //cout << "size mpTracker->mlbLost: " << mpTracker->mlbLost.size() << endl;
-
     // Iterate over the RelativeFramePoses from the mpTracker object we
     // initialize multiple loop variables and also increment the iterators we
     // defined above as we go through with the loop
     for(auto lit=mpTracker->mlRelativeFramePoses.begin(),
         lend=mpTracker->mlRelativeFramePoses.end();lit!=lend;lit++, lRit++, lT++, lbL++)
     {
-        //cout << "1" << endl;
         if(*lbL)
             continue; // if tracking is lost we skip
 
-
         KeyFrame* pKF = *lRit; // this is the reference keyframe for the current frame
-        //cout << "KF: " << pKF->mnId << endl;
 
         Sophus::SE3f Trw; // transformation matrix
 
         // If the reference keyframe was culled, traverse the spanning tree to get a suitable keyframe.
-        if (!pKF)
-            continue;
-
-        //cout << "2.5" << endl;
-
         while(pKF->isBad())
         {
-            //cout << " 2.bad" << endl;
             Trw = Trw * pKF->mTcp; // mTcp is "pose relative to parent"
             pKF = pKF->GetParent();
-            //cout << "--Parent KF: " << pKF->mnId << endl;
         }
 
         if(!pKF || pKF->GetMap() != pBiggerMap)
         {
-            //cout << "--Parent KF is from another map" << endl;
             continue;
         }
 
-        //cout << "3" << endl;
-
         Trw = Trw * pKF->GetPose()*Twb; // Tcp*Tpw*Twb0=Tcb0 where b0 is the new world reference
-
-        // cout << "4" << endl;
 
         if (mSensor == IMU_MONOCULAR || mSensor == IMU_STEREO || mSensor==IMU_RGBD)
         {
@@ -1340,14 +1320,14 @@ void System::SaveTrajectoryDeepScenario(const string &filename)
             }
 
             strTime += ".png";
-            f << setprecision(9) << strTime << " " << Rwc(0,0) << " " << Rwc(0,1)  << " " << Rwc(0,2) << " "  << twc(0) << " " <<
-                Rwc(1,0) << " " << Rwc(1,1)  << " " << Rwc(1,2) << " "  << twc(1) << " " <<
-                Rwc(2,0) << " " << Rwc(2,1)  << " " << Rwc(2,2) << " "  << twc(2) << endl;
-        }
+            f << strTime << " " << setprecision(9)
+              << Rwc(0,0) << " " << Rwc(0,1)  << " " << Rwc(0,2) << " "  << twc(0) << " "
+              << Rwc(1,0) << " " << Rwc(1,1)  << " " << Rwc(1,2) << " "  << twc(1) << " "
+              << Rwc(2,0) << " " << Rwc(2,1)  << " " << Rwc(2,2) << " "  << twc(2) << endl;
 
-        // cout << "5" << endl;
+              cout << "lT: " << (*lT) << " strTime: " << strTime << " twc(2): " << twc(2) << endl;
+        }
     }
-    //cout << "end saving trajectory" << endl;
     f.close();
     cout << endl << "End of saving trajectory to " << filename << " ..." << endl;
 }
