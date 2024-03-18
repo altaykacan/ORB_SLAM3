@@ -149,8 +149,6 @@ int main(int argc, char **argv)
 
     // Save camera trajectory
     SLAM.SaveKeyFrameTrajectoryTUM("out_KeyFrameTrajectory.txt");
-    SLAM.SaveKeyFrameTrajectoryDeepScenario("out_CustomKeyFrameTrajectory.txt");
-    SLAM.SaveTrajectoryDeepScenario("out_CustomAllFrameTrajectory.txt");
 
     // Save point cloud as txt file, don't add file extension
     SLAM.SavePointCloud("out_map");
