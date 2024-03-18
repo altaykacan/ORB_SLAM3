@@ -1222,7 +1222,7 @@ void System::SaveKeyFrameTrajectoryEuRoC(const string &filename, Map* pMap)
 }
 void System::SaveTrajectoryDeepScenario(const string &filename)
 {
-
+   
     cout << endl << "Saving trajectory to " << filename << " ..." << endl;
     /*if(mSensor==MONOCULAR)
     {
@@ -1249,7 +1249,7 @@ void System::SaveTrajectoryDeepScenario(const string &filename)
 
     // Transform all keyframes so that the first keyframe is at the origin.
     // After a loop closure the first keyframe might not be at the origin.
-    Sophus::SE3f Twb; // Can be world to cam0 or world to b depending on IMU or not.
+    Sophus::SE3f Twb; // Can be word to cam0 or world to b depending on IMU or not.
     if (mSensor==IMU_MONOCULAR || mSensor==IMU_STEREO || mSensor==IMU_RGBD)
         Twb = vpKFs[0]->GetImuPose();
     else
@@ -1269,34 +1269,51 @@ void System::SaveTrajectoryDeepScenario(const string &filename)
     list<ORB_SLAM3::KeyFrame*>::iterator lRit = mpTracker->mlpReferences.begin();
     list<double>::iterator lT = mpTracker->mlFrameTimes.begin();
     list<bool>::iterator lbL = mpTracker->mlbLost.begin();
-    // we get iterators for each of the things listed above
 
-    // Iterate over the RelativeFramePoses from the mpTracker object we
-    // initialize multiple loop variables and also increment the iterators we
-    // defined above as we go through with the loop
+    //cout << "size mlpReferences: " << mpTracker->mlpReferences.size() << endl;
+    //cout << "size mlRelativeFramePoses: " << mpTracker->mlRelativeFramePoses.size() << endl;
+    //cout << "size mpTracker->mlFrameTimes: " << mpTracker->mlFrameTimes.size() << endl;
+    //cout << "size mpTracker->mlbLost: " << mpTracker->mlbLost.size() << endl;
+
+
     for(auto lit=mpTracker->mlRelativeFramePoses.begin(),
         lend=mpTracker->mlRelativeFramePoses.end();lit!=lend;lit++, lRit++, lT++, lbL++)
     {
+        //cout << "1" << endl;
         if(*lbL)
-            continue; // if tracking is lost we skip
+            continue;
 
-        KeyFrame* pKF = *lRit; // this is the reference keyframe for the current frame
 
-        Sophus::SE3f Trw; // transformation matrix
+        KeyFrame* pKF = *lRit;
+        //cout << "KF: " << pKF->mnId << endl;
+
+        Sophus::SE3f Trw;
 
         // If the reference keyframe was culled, traverse the spanning tree to get a suitable keyframe.
+        if (!pKF)
+            continue;
+
+        //cout << "2.5" << endl;
+
         while(pKF->isBad())
         {
-            Trw = Trw * pKF->mTcp; // mTcp is "pose relative to parent"
+            //cout << " 2.bad" << endl;
+            Trw = Trw * pKF->mTcp;
             pKF = pKF->GetParent();
+            //cout << "--Parent KF: " << pKF->mnId << endl;
         }
 
         if(!pKF || pKF->GetMap() != pBiggerMap)
         {
+            //cout << "--Parent KF is from another map" << endl;
             continue;
         }
 
+        //cout << "3" << endl;
+
         Trw = Trw * pKF->GetPose()*Twb; // Tcp*Tpw*Twb0=Tcb0 where b0 is the new world reference
+
+        // cout << "4" << endl;
 
         if (mSensor == IMU_MONOCULAR || mSensor == IMU_STEREO || mSensor==IMU_RGBD)
         {
@@ -1307,30 +1324,35 @@ void System::SaveTrajectoryDeepScenario(const string &filename)
         }
         else
         {
-            Sophus::SE3f Twc = ((*lit)*Trw).inverse();
-            Eigen::Matrix3f Rwc = Twc.rotationMatrix();
-            Eigen::Vector3f twc = Twc.translation();
-            // std::string path = pKF->mNameFile;
-            // std::string filename = path.substr(path.find_last_of("/\\") + 1);
-            int intTime = static_cast<int>(*lT);
-            std::string strTime = std::to_string(intTime);
+          Sophus::SE3f Twc = ((*lit)*Trw).inverse();
+          Eigen::Matrix3f Rwc = Twc.rotationMatrix();
+		  Eigen::Vector3f twc = Twc.translation();
+		  // std::string path = pKF->mNameFile;
+		  // std::string filename = path.substr(path.find_last_of("/\\") + 1);
+		  int intTime = static_cast<int>(1e9*(*lT));
+		  std::string strTime = std::to_string(intTime);
 
-            while (strTime.length() < 6){
-                strTime = "0" + strTime;
-            }
+		  while (strTime.length() < 6){
+		    	strTime = "0" + strTime;
+		    }
 
-            strTime += ".png";
-            f << strTime << " " << setprecision(9)
-              << Rwc(0,0) << " " << Rwc(0,1)  << " " << Rwc(0,2) << " "  << twc(0) << " "
-              << Rwc(1,0) << " " << Rwc(1,1)  << " " << Rwc(1,2) << " "  << twc(1) << " "
-              << Rwc(2,0) << " " << Rwc(2,1)  << " " << Rwc(2,2) << " "  << twc(2) << endl;
-
-              cout << "lT: " << (*lT) << " strTime: " << strTime << " twc(2): " << twc(2) << endl;
+		  strTime += ".jpg";
+		  f << strTime << " " << setprecision(9)
+			<< Rwc(0,0) << " " << Rwc(0,1)  << " " << Rwc(0,2) << " "  << twc(0) << " "
+			<< Rwc(1,0) << " " << Rwc(1,1)  << " " << Rwc(1,2) << " "  << twc(1) << " "
+			 << Rwc(2,0) << " " << Rwc(2,1)  << " " << Rwc(2,2) << " "  << twc(2) << endl;
+			 
+		
+		cout << "lT: " << (*lT) << endl;
         }
+
+        // cout << "5" << endl;
     }
+    //cout << "end saving trajectory" << endl;
     f.close();
     cout << endl << "End of saving trajectory to " << filename << " ..." << endl;
 }
+
 void System::SaveKeyFrameTrajectoryDeepScenario(const string &filename)
 {
     cout << endl << "Saving keyframe trajectory to " << filename << " ..." << endl;
@@ -1381,17 +1403,26 @@ void System::SaveKeyFrameTrajectoryDeepScenario(const string &filename)
         else
         {
             Sophus::SE3f Twc = pKF->GetPoseInverse();
-            //Eigen::Quaternionf q = Twc.unit_quaternion();
-            Eigen::Matrix3f Rwc = Twc.rotationMatrix();
+			Eigen::Matrix3f Rwc = Twc.rotationMatrix();
             Eigen::Vector3f twc = Twc.translation();
-            std::string path = pKF->mNameFile;
-            std::string filename = path.substr(path.find_last_of("/\\") + 1);
-            f << setprecision(9)  << filename << " " << Rwc(0,0) << " " << Rwc(0,1)  << " " << Rwc(0,2) << " "  << twc(0) << " " <<
+            std::string idString = pKF->mNameFile;
+			float idFloat = std::stof(idString);
+			int idInt = static_cast<int>(idFloat);
+			std::string strTime = std::to_string(idInt);
+
+			while (strTime.length() < 6){
+				strTime = "0" + idInt;
+		    }
+
+			strTime += ".jpg";
+			
+            f << strTime << setprecision(9) << " " << Rwc(0,0) << " " << Rwc(0,1)  << " " << Rwc(0,2) << " "  << twc(0) << " " <<
                 Rwc(1,0) << " " << Rwc(1,1)  << " " << Rwc(1,2) << " "  << twc(1) << " " <<
                 Rwc(2,0) << " " << Rwc(2,1)  << " " << Rwc(2,2) << " "  << twc(2) << endl;
+				
         }
-    }
-    f.close();
+	}
+	f.close();
 }
 
 /*void System::SaveTrajectoryKITTI(const string &filename)
